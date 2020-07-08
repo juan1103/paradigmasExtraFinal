@@ -13,7 +13,8 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author Javier
  */
 public class Paso {
-    private boolean[] cerrado = new boolean[]{false, false};
+    private int ascesoresActivos;
+    private boolean[] cerrado = new boolean[]{false, false, false};
     private boolean todosCerrados = false;
     private Lock cerrojo = new ReentrantLock();
     private Condition parar = cerrojo.newCondition();
@@ -32,21 +33,21 @@ public class Paso {
         }
     }
 
-    public void abrir(int empleado) {
+    public void abrir(int ascensor) {
         try {
             cerrojo.lock();
-            cerrado[empleado] = false;
+            cerrado[ascensor] = false;
             parar.signal();
         } finally {
             cerrojo.unlock();
         }
     }
 
-    public void cerrar(int empleado) {
+    public void cerrar(int ascensor) {
         try {
             cerrojo.lock();
-            cerrado[empleado] = true;
-            System.out.println("Empleado " + empleado + 1 + " parado");
+            cerrado[ascensor] = true;
+            System.out.println("Ascensor " + ascensor + 1 + " parado");
         } finally {
             cerrojo.unlock();
         }

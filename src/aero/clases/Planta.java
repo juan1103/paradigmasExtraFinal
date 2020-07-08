@@ -7,7 +7,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class Planta {
 
-    private ContenidoPlanta contenidoAvion;
+    private ContenidoPlanta contenidoPlanta;
     private Lock c = new ReentrantLock();
     private Integer empleadosEnElAvion;
     private Log log;
@@ -15,11 +15,10 @@ public class Planta {
 
 
     public Planta(Log log, Paso paso, JTextField tf) {
-        this.contenidoAvion = new ContenidoPlanta(tf);
+        this.contenidoPlanta = new ContenidoPlanta(tf);
         this.empleadosEnElAvion = 0;
         this.log = log;
         this.paso = paso;
-
     }
 
 
@@ -38,7 +37,7 @@ public class Planta {
         tf.setText("Empleado numero: " + numEmpleado + " entrando al avión con maleta: " + maleta.toString());
 
         this.aumentarNumAscensores();
-        this.contenidoAvion.meter(maleta);
+        this.contenidoPlanta.meter(maleta);
         System.out.println("Maleta " + maleta.getIdMaleta() + " introducida por empleado número: " + numEmpleado);
         log.agregarOperacion("Maleta " + maleta.getIdMaleta() + " introducida por empleado número: " + numEmpleado);
         tf.setText("Maleta " + maleta.getIdMaleta() + " introducida por empleado número: " + numEmpleado);
@@ -72,11 +71,11 @@ public class Planta {
     }
 
     public ContenidoPlanta getContenidoPlanta() {
-        return contenidoAvion;
+        return contenidoPlanta;
     }
 
-    public void setContenidoAvion(ContenidoPlanta contenidoAvion) {
-        this.contenidoAvion = contenidoAvion;
+    public void setContenidoPlanta(ContenidoPlanta contenidoPlanta) {
+        this.contenidoPlanta = contenidoPlanta;
     }
 }
 

@@ -9,6 +9,7 @@ public class Pasajero extends Thread {
     private CyclicBarrier barreraFin;
     private Paso p;
     private int contadorPasoMaletas;
+    private int dirPlanta;
 
     public Pasajero(int num, Edificio a, Paso paso, CyclicBarrier barreraFin) {
         this.num = num;
@@ -43,5 +44,53 @@ public class Pasajero extends Thread {
         }
 
 
+    }
+
+    public int getNum() {
+        return num;
+    }
+
+    public void setNum(int num) {
+        this.num = num;
+    }
+
+    public Edificio getA() {
+        return a;
+    }
+
+    public void setA(Edificio a) {
+        this.a = a;
+    }
+
+    public CyclicBarrier getBarreraFin() {
+        return barreraFin;
+    }
+
+    public void setBarreraFin(CyclicBarrier barreraFin) {
+        this.barreraFin = barreraFin;
+    }
+
+    public Paso getP() {
+        return p;
+    }
+
+    public void setP(Paso p) {
+        this.p = p;
+    }
+
+    public int getContadorPasoMaletas() {
+        return contadorPasoMaletas;
+    }
+
+    public void setContadorPasoMaletas(int contadorPasoMaletas) {
+        this.contadorPasoMaletas = contadorPasoMaletas;
+    }
+
+    public int getDirPlanta() {
+        return dirPlanta;
+    }
+
+    public void setDirPlanta(int dirPlanta) {
+        this.dirPlanta = dirPlanta;
     }
 }

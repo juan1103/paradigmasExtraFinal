@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -12,8 +13,18 @@ import java.util.concurrent.locks.ReentrantLock;
 public class Edificio {
 
 
-    private ArrayList<Maleta> maletas = new ArrayList(Arrays.asList(null, null, null, null, null, null, null, null));
     private ArrayList<Integer> empleadosPos = new ArrayList(Arrays.asList(null, null, null, null, null, null, null, null));
+    private LinkedList<Peticion> peticiones = new LinkedList<>();
+
+    public int getPersonasAtendidas() {
+        return personasAtendidas;
+    }
+
+    public void setPersonasAtendidas(int personasAtendidas) {
+        this.personasAtendidas = personasAtendidas;
+    }
+
+    private int personasAtendidas;
 
 
     private ArrayList<JTextField> mls;
@@ -26,14 +37,14 @@ public class Edificio {
     private Condition esperaVacio = c.newCondition();
     private Log log;
     private ColaPasajeros colaPasajeros;
-    private Planta avion;
+    private ArrayList<Planta> plantas;
 
-    public Edificio(Log log, ArrayList<JTextField> mls, Servidor threadServidor, Planta avion) {
+    public Edificio(Log log, ArrayList<JTextField> mls, Servidor threadServidor, ArrayList<Planta> plantas) {
         this.log = log;
         this.colaPasajeros = new ColaPasajeros();
         this.mls = mls;
         this.threadServidor = threadServidor;
-        this.avion = avion;
+        this.plantas = plantas;
     }
 
     //Funcion que simula la llegada de un pasajero a la cola para dejar la maleta
@@ -118,42 +129,31 @@ public class Edificio {
 
     }
 
-    //Funcion que comprueba que hueco no esta vacio y le asigna un empleado
-    public boolean comprobarNoVacio(int numEmpleado) {
+    //Comprueba si hay peticiones de plantas de boton
+    public Peticion comprobarPeticiones() {
         c.lock();
         try {
-            while (cintaOcupado() == null && maletasAtendidas < 80) { //Si los huecos de cinta de equipaje estan vacio los empleados esperan
+
+
+
+
+            if (peticiones.get(0).equals(null)) {
                 try {
                     esperaVacio.await();
                 } catch (InterruptedException ex) {
                 }
             }
 
-            if (maletasAtendidas >= 80) { //Cuando acaben de atender las 80 maletas
-                return false;             //retornamos sin ejecutar el resto de la función
-            }
-
-
-            Maleta maleta = cintaOcupado();
-
-
-            //System.out.println(maleta.toString());
-            int posMaleta = maletas.indexOf(maleta);
-
-            System.out.println(posMaleta);
-            empleadosPos.set(posMaleta, numEmpleado);
-
 
             String juntos = juntar();
-            //Cada vez que un empleado cambia de posicion en la cinta de equipajes actualizamos los datos del servidor
             threadServidor.setDatos(juntos);
-            System.out.println("Empleados en cinta: " + empleadosPos.toString());
-            return true;
+            return peticiones.removeFirst();
 
         } finally {
             c.unlock();
         }
     }
+
 
     //Funcion que simula la salida de la cinta  y el fin de la atencion a un pasjero por parte de un empleado
     public boolean salirCinta(int num, Maleta maletaParaAvion) {
@@ -268,30 +268,7 @@ public class Edificio {
 
     }
 
-    public Maleta cintaOcupado() { //Funcion que devuelve el vehiculo con menor id en surtidor comprobando si no esta siendo ya atendido
 
-
-        Maleta maleta = null;
-
-        for (int i = 0; i < maletas.size(); i++) {
-            if (maletas.get(i) != null) {
-                if (empleadosPos.get(i) == null)
-                    maleta = maletas.get(i);
-                for (int j = 0; j < maletas.size(); j++) {
-                    if (maletas.get(j) != null) {
-                        if (empleadosPos.get(j) == null) {
-                            if (maletas.get(j).getNumPasajero() < maleta.getNumPasajero())
-                                maleta = maletas.get(j);
-                        }
-                    }
-                }
-            }
-        }
-
-        return maleta;
-
-
-    }
 
     //Funcion para juntar y mandar al servdidor
     public String juntar() {

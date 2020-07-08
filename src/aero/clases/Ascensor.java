@@ -3,68 +3,83 @@ package aero.clases;
 
 import javax.swing.*;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class Ascensor extends Thread {
     private int num;
-    private Edificio a;
+    private Edificio e;
     private Paso p;
-    private boolean pasajerosAsistidos = true;
-    private Planta avion;
+    private int nPlanta;
+    private int nPlantaDir;
+    private ArrayList<Planta> plantas;
+    private ArrayList<Pasajero> personas;
     private JTextField tf;
 
-    public Ascensor(int num, Edificio a, Paso paso, Planta avion, JTextField tf) {
+    public Ascensor(int num, Edificio a, Paso paso, ArrayList<Planta> plantas, JTextField tf, ArrayList<Pasajero> personas;) {
         this.num = num;
-        this.a = a;
+        this.e = a;
         this.p = paso;
-        this.avion = avion;
+        this.plantas = plantas;
         this.tf = tf;
+        this.nPlanta=0;
+        this.nPlantaDir=0;
+        this.personas=personas;
+
 
     }
 
     public void run() {
 
 
-        while (pasajerosAsistidos) { //El empleado atiende maletas hasta que se acaban  y devuelve false
+        while (true) { //El ascensor atiende pasajeros hasta que se acaban  y devuelve false
 
 
-            p.mirar(num);
-            p.mirarTodos();
-            int maletasAtendidas = this.a.getMaletasAtendidas();
-            if (maletasAtendidas == 80) {
+            int personasAtendidas = this.e.getPersonasAtendidas();
+            if (personasAtendidas == 60000) {
                 System.out.println("Todas las maletas atendidas");
+                break;
 
             }
-            boolean noParar = a.comprobarNoVacio(this.num);//Comprobamos si hay alguna maleta al que atender
-
-            if (!noParar) {
-                return;
-            }
-            Maleta maletaParaAvion = new Maleta(null, null);
-            pasajerosAsistidos = a.salirCinta(this.num, maletaParaAvion); //terminamos de atender
+            p.mirar(num);
 
 
-            System.out.println("Empleado numero: " + this.num + " yendo al avión con maleta: " + maletaParaAvion.toString());
-            tf.setText("Empleado numero: " + this.num + " yendo al avión con maleta: " + maletaParaAvion.toString());
+            Peticion peticion = e.comprobarPeticiones();//Comprobamos si hay alguna petición de llamada de botón
+            peticion.setAscensorEnCurso(this);
 
-            long tAleatorio1 = 400 + (int) ((300) * Math.random());
+
+            System.out.println("Ascensor va a planta "+peticion.getDirPlanta());
+//Cogemos personas
+
+            LinkedList<Pasajero> pasajerosParaMeterAscensor = new LinkedList<>();
+            personas.forEach((final Pasajero pasajero)-> System.out.println(persona.getNombre()));
+        }
 
 
             try {
-                Thread.sleep(tAleatorio1);
-                p.mirar(num);
-                p.mirarTodos();
-                this.avion.meterPasajero(maletaParaAvion, this.num, this.tf);
-            } catch (IOException | InterruptedException e) {
-                e.printStackTrace();
+                Thread.sleep(Math.abs(5*(peticion.getDirPlanta()-peticion.getOriPlanta())));
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
             }
 
+            System.out.println("Llega a planta "+peticion.getDirPlanta());
+
+        //Dejamos personas
+            for (int i = 0; i < 7; i++) {
+                Pasajero pasajero = this.personas.remove(0);
+                plantas.get(peticion.getDirPlanta()).getContenidoPlanta().getLista().add(pasajero);
+            }
 
         }
 
-        System.out.println("Acaba Empleado " + this.num);
-        tf.setText("Acaba Empleado " + this.num);
-        System.out.println("Contenido avión: " + this.avion.getContenidoPlanta().getLista().toString() + " || Cantidad maletas: " + this.avion.getContenidoPlanta().getLista().size());
+        System.out.println("Acaba Ascensor " + this.num);
+        tf.setText("Acaba ascensor " + this.num);
+        System.out.println("Contenido avión: " +  this.plantas.get(this.nPlanta).getContenidoPlanta().getLista().toString() + " || Cantidad maletas: " + this.plantas.get(this.nPlanta).getContenidoPlanta().getLista().size();
 
     }
+
+
+
+
 }
 
