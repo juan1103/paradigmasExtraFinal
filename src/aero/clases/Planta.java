@@ -12,6 +12,7 @@ public class Planta {
     private Integer empleadosEnElAvion;
     private Log log;
     private Paso paso;
+    private boolean peticionDeLlamada;
 
 
     public Planta(Log log, Paso paso, JTextField tf) {
@@ -19,6 +20,7 @@ public class Planta {
         this.empleadosEnElAvion = 0;
         this.log = log;
         this.paso = paso;
+        this.peticionDeLlamada = false;
     }
 
 

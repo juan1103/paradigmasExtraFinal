@@ -4,7 +4,6 @@ import javax.swing.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -14,7 +13,6 @@ public class Edificio {
 
 
     private ArrayList<Integer> empleadosPos = new ArrayList(Arrays.asList(null, null, null, null, null, null, null, null));
-    private LinkedList<Peticion> peticiones = new LinkedList<>();
 
     public int getPersonasAtendidas() {
         return personasAtendidas;
@@ -38,6 +36,7 @@ public class Edificio {
     private Log log;
     private ColaPasajeros colaPasajeros;
     private ArrayList<Planta> plantas;
+    private ArrayList<LlamadaBoton> llamadasBoton = new ArrayList<LlamadaBoton>();
 
     public Edificio(Log log, ArrayList<JTextField> mls, Servidor threadServidor, ArrayList<Planta> plantas) {
         this.log = log;
@@ -130,29 +129,6 @@ public class Edificio {
     }
 
     //Comprueba si hay peticiones de plantas de boton
-    public Peticion comprobarPeticiones() {
-        c.lock();
-        try {
-
-
-
-
-            if (peticiones.get(0).equals(null)) {
-                try {
-                    esperaVacio.await();
-                } catch (InterruptedException ex) {
-                }
-            }
-
-
-            String juntos = juntar();
-            threadServidor.setDatos(juntos);
-            return peticiones.removeFirst();
-
-        } finally {
-            c.unlock();
-        }
-    }
 
 
     //Funcion que simula la salida de la cinta  y el fin de la atencion a un pasjero por parte de un empleado
@@ -302,5 +278,14 @@ public class Edificio {
 
     public void setMaletasAtendidas(int maletasAtendidas) {
         this.maletasAtendidas = maletasAtendidas;
+    }
+
+
+    public ArrayList<LlamadaBoton> getLlamadasBoton() {
+        return llamadasBoton;
+    }
+
+    public void setLlamadasBoton(ArrayList<LlamadaBoton> llamadasBoton) {
+        this.llamadasBoton = llamadasBoton;
     }
 }

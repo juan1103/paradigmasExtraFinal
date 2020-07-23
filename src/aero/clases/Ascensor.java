@@ -2,9 +2,11 @@ package aero.clases;
 
 
 import javax.swing.*;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class Ascensor extends Thread {
     private int num;
@@ -15,6 +17,11 @@ public class Ascensor extends Thread {
     private ArrayList<Planta> plantas;
     private ArrayList<Pasajero> personas;
     private JTextField tf;
+    private LinkedList<Peticion> peticiones;
+    private Lock c = new ReentrantLock(true);
+    private Condition esperaLleno = c.newCondition();
+    private Condition esperaVacio = c.newCondition();
+
 
     public Ascensor(int num, Edificio a, Paso paso, ArrayList<Planta> plantas, JTextField tf, ArrayList<Pasajero> personas;) {
         this.num = num;
@@ -32,28 +39,33 @@ public class Ascensor extends Thread {
     public void run() {
 
 
-        while (true) { //El ascensor atiende pasajeros hasta que se acaban  y devuelve false
+        while (true) {
+//IR a planta
 
 
-            int personasAtendidas = this.e.getPersonasAtendidas();
-            if (personasAtendidas == 60000) {
-                System.out.println("Todas las maletas atendidas");
-                break;
+            p.mirar(num); // Solo 2 ascensores a la vez
+            LlamadaBoton llamada = this.comprobarPeticionesDePlanta();//Comprobamos si hay alguna petición de llamada de botón
+
+
+            
+            System.out.println("Ascensor va a planta "+llamada.getPlanta();
+
+
+//Cogemos personas
+            System.out.println("Está en planta "+llamada.getPlanta();
+            LinkedList<Pasajero> pasajerosParaMeterAscensor = new LinkedList<>();
+
+
+
+
+
+            for (int i = 0; i < this.peticiones.size(); ++i) {
+
+
 
             }
-            p.mirar(num);
 
 
-            Peticion peticion = e.comprobarPeticiones();//Comprobamos si hay alguna petición de llamada de botón
-            peticion.setAscensorEnCurso(this);
-
-
-            System.out.println("Ascensor va a planta "+peticion.getDirPlanta());
-//Cogemos personas
-
-            LinkedList<Pasajero> pasajerosParaMeterAscensor = new LinkedList<>();
-            personas.forEach((final Pasajero pasajero)-> System.out.println(persona.getNombre()));
-        }
 
 
             try {
@@ -68,15 +80,66 @@ public class Ascensor extends Thread {
             for (int i = 0; i < 7; i++) {
                 Pasajero pasajero = this.personas.remove(0);
                 plantas.get(peticion.getDirPlanta()).getContenidoPlanta().getLista().add(pasajero);
+
+
             }
-
-        }
-
         System.out.println("Acaba Ascensor " + this.num);
         tf.setText("Acaba ascensor " + this.num);
         System.out.println("Contenido avión: " +  this.plantas.get(this.nPlanta).getContenidoPlanta().getLista().toString() + " || Cantidad maletas: " + this.plantas.get(this.nPlanta).getContenidoPlanta().getLista().size();
+        }
 
+
+
+}
+    public Peticion  comprobarPeticionesDeDir() {
+        c.lock();
+        try {
+
+
+
+
+            if (this.peticiones.get(0).equals(null)) {
+                try {
+                    esperaVacio.await();
+                } catch (InterruptedException ex) {
+                }
+            }
+
+            /*
+            String juntos = juntar();
+            threadServidor.setDatos(juntos);
+             */
+
+            return peticiones.removeFirst();
+
+
+
+        } finally {
+            c.unlock();
+        }
     }
+
+    public LlamadaBoton comprobarPeticionesDePlanta () {
+        c.lock();
+        try {
+
+
+            if (this.e.getLlamadasBoton().isEmpty()) {
+                try {
+                    esperaVacio.await();
+                } catch (InterruptedException ex) {
+                }
+
+
+            }
+            return e.getLlamadasBoton().remove(0);
+
+
+        } finally {
+            c.unlock();
+        }
+    }
+
 
 
 
